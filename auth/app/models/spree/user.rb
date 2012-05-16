@@ -3,7 +3,7 @@ module Spree
     include Core::UserBanners
 
     devise :database_authenticatable, :token_authenticatable, :registerable, :recoverable,
-           :rememberable, :trackable, :validatable, :encryptable, :encryptor => 'authlogic_sha512'
+           :rememberable, :trackable, :validatable#, :encryptable, :encryptor => 'authlogic_sha512'
 
     has_many :orders
     has_and_belongs_to_many :roles, :join_table => 'spree_roles_users'

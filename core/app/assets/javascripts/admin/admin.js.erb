@@ -183,13 +183,13 @@ add_fields = function(target, association, content) {
   $(target).append(content.replace(regexp, new_id));
 }
 
-$('a.remove_fields').live('click', function() {
+$('a.remove_fields').on('click', function() {
   $(this).prev("input[type=hidden]").val("1");
   $(this).closest(".fields").hide();
   return false;
 });
 
-$(".observe_field").live('change', function() {
+$(".observe_field").on('change', function() {
   target = $(this).attr("data-update");
   ajax_indicator = $(this).attr("data-ajax-indicator") || '#busy_indicator';
   $(target).hide();
@@ -208,9 +208,9 @@ $(".observe_field").live('change', function() {
 handle_date_picker_fields = function(){
   $('.datepicker').datepicker({
     dateFormat: "<%= ::I18n.t(:format, :scope => 'spree.date_picker', :default => 'yy/mm/dd') %>",
-    dayNames: ["<%= ::I18n.t(:day_names, :scope => :date).join('","') %>"],
-    dayNamesMin: ["<%= ::I18n.t(:abbr_day_names, :scope => :date).join('","') %>"],
-    monthNames: ["<%= ::I18n.t(:month_names, :scope => :date).join('","') %>"],
+    dayNames: <%= ::I18n.t(:day_names, :scope => :date).to_json %>,
+    dayNamesMin: <%= ::I18n.t(:abbr_day_names, :scope => :date).to_json %>,
+    monthNames: <%= (::I18n.t(:month_names, :scope => :date).delete_if(&:blank?)).to_json %>,
     prevText: '<%= ::I18n.t(:previous) %>',
     nextText: '<%= ::I18n.t(:next) %>',
     showOn: "button",
@@ -226,7 +226,7 @@ $(document).ready(function(){
 
   handle_date_picker_fields();
 
-  $(".select_properties_from_prototype").live("click", function(){
+  $(".select_properties_from_prototype").on("click", function(){
     $("#busy_indicator").show();
     var clicked_link = $(this);
     $.ajax({ dataType: 'script', url: clicked_link.attr("href"), type: 'get',

@@ -23,9 +23,9 @@ module Spree
     has_many :option_types, :through => :product_option_types
     has_many :product_properties, :dependent => :destroy
     has_many :properties, :through => :product_properties
-    belongs_to :tax_category
+    belongs_to :tax_category, :class_name => "Spree::TaxCategory"
     has_and_belongs_to_many :taxons, :join_table => 'spree_products_taxons'
-    belongs_to :shipping_category
+    belongs_to :shipping_category, :class_name => "Spree::ShippingCategory"
 
     has_one :master,
       :class_name => 'Spree::Variant',
@@ -61,7 +61,8 @@ module Spree
     def variant_images
       Image.joins("LEFT JOIN #{Variant.quoted_table_name} ON #{Variant.quoted_table_name}.id = #{Asset.quoted_table_name}.viewable_id").
       where("#{Variant.quoted_table_name}.product_id = #{self.id}").
-      order("#{Asset.quoted_table_name}.position")
+      order("#{Asset.quoted_table_name}.position").
+      extend(Spree::Core::RelationSerialization)
     end
 
     alias_method :images, :variant_images
@@ -180,14 +181,6 @@ module Spree
     def categorise_variants_from_option(opt_type)
       return {} unless option_types.include?(opt_type)
       variants.active.group_by { |v| v.option_values.detect { |o| o.option_type == opt_type} }
-    end
-
-    def effective_tax_rate
-      if tax_category
-        tax_category.effective_amount
-      else
-        TaxRate.default
-      end
     end
 
     def self.like_any(fields, values)

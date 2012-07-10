@@ -46,7 +46,9 @@ $(document).ready(function(){
       minChars: 5,
       delay: 1500,
       source: function(request, response) {
-        $.get(ajax_root_prefix() + "admin/users.json?q=" + $("#customer_search").val() + "&authenticity_token=" + encodeURIComponent($('meta[name=csrf-token]').attr("content")), function(data) {
+        var params = { q: $('#customer_search').val(),
+                       authenticity_token: encodeURIComponent($('meta[name=csrf-token]').attr("content")) }
+        $.get(Spree.routes.user_search + '&' + jQuery.param(params), function(data) {
           result = prep_user_autocomplete_data(data)
           response(result);
         });
@@ -78,6 +80,7 @@ $(document).ready(function(){
         $('#user_id').val(ui.item.data['id']);
         $('#guest_checkout_true').prop("checked", false);
         $('#guest_checkout_false').prop("checked", true);
+        $('#guest_checkout_false').prob("disabled", false);
         return true;
       }
     }).data("autocomplete")._renderItem = function(ul, item) {
@@ -107,7 +110,6 @@ $(document).ready(function(){
     $('#customer_search').val("");
     $('#user_id').val("");
     $('#checkout_email').val("");
-    $('#guest_checkout_false').prop("disabled", true);
 
     $('#order_bill_address_attributes_firstname').val("");
     $('#order_bill_address_attributes_lastname').val("");

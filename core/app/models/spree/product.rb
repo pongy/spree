@@ -62,8 +62,7 @@ module Spree
       Image.joins("LEFT JOIN #{Variant.quoted_table_name} ON #{Variant.quoted_table_name}.id = #{Asset.quoted_table_name}.viewable_id").
       where("#{Variant.quoted_table_name}.product_id = #{self.id}").
       order("#{Asset.quoted_table_name}.position").
-      extend(Spree::Core::RelationSerialization).
-      all
+      extend(Spree::Core::RelationSerialization)
     end
 
     alias_method :images, :variant_images

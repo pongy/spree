@@ -123,9 +123,9 @@ $.fn.product_autocomplete = function(){
   return this.each(function() {
     $(this).autocomplete({
       source: function(request, response) {
-        $.get(ajax_urls.product_search_json + "?q=" + $('#add_product_name').val() + "&authenticity_token=" + encodeURIComponent($('meta[name=csrf-token]').attr("content")), function(data) {
-          result = prep_product_autocomplete_data(data)
-          response(result);
+          $.get(Spree.routes.product_search + '?' + jQuery.param({ q: $('#add_product_name').val(), authenticity_token: encodeURIComponent($('meta[name=csrf-token]').attr("content"))}), function(data) {
+              result = prep_product_autocomplete_data(data);
+              response(result);
         });
       },
       minLength: 4,
@@ -171,12 +171,12 @@ $.fn.objectPicker = function(url){
   });
 };
 
-$.fn.productPicker = function(){
-  $(this).objectPicker(ajax_urls.product_search_basic_json);
-}
-$.fn.userPicker = function(){
-  $(this).objectPicker(ajax_urls.user_search_basic_json);
-}
+//$.fn.productPicker = function(){
+//  $(this).objectPicker(ajax_urls.product_search_basic_json);
+//}
+//$.fn.userPicker = function(){
+//  $(this).objectPicker(ajax_urls.user_search_basic_json);
+//}
 
 // Possible defunct
 add_fields = function(target, association, content) {

@@ -82,8 +82,8 @@ format_product_autocomplete = function(item){
     }).join(", ")
 
     html += "<div><h4>" + name + "</h4>";
-    html += "<span><strong><%= ::I18n.t(:sku) %>: </strong>" + variant['sku'] + "</span>";
-    html += "<span><strong><%= ::I18n.t(:on_hand) %>: </strong>" + variant['count_on_hand'] + "</span></div>";
+    html += "<span><strong>SKU: </strong>" + variant['sku'] + "</span>";
+    html += "<span><strong>On Hand: </strong>" + variant['count_on_hand'] + "</span></div>";
   }
 
   return html

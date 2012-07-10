@@ -61,9 +61,9 @@ format_product_autocomplete = function(item){
 
     html += "<div><h4>" + product['name'] + "</h4>";
     if (product['master']) {
-      html += "<span><strong><%= I18n.t(:sku) %>: </strong>" + product['master']['sku'] + "</span>";
+      html += "<span><strong>SKU: </strong>" + product['master']['sku'] + "</span>";
     }
-    html += "<span><strong><%= I18n.t(:on_hand) %>: </strong>" + product['count_on_hand'] + "</span></div>";
+    html += "<span><strong>On Hand: </strong>" + product['count_on_hand'] + "</span></div>";
   }else{
     // variant
     var variant = item.data['variant'];

@@ -123,9 +123,9 @@ $.fn.product_autocomplete = function(){
   return this.each(function() {
     $(this).autocomplete({
       source: function(request, response) {
-        $.get(Spree.routes.product_search + '?' + jQuery.param({ q: $('#add_product_name').val(), authenticity_token: encodeURIComponent($('meta[name=csrf-token]').attr("content"))}), function(data) {
-          result = prep_product_autocomplete_data(data)
-          response(result);
+        $.get(Spree.routes.admin_products_path({format: 'json'}) + "?q=" + $('#add_product_name').val() + "&authenticity_token=" + encodeURIComponent($('meta[name=csrf-token]').attr("content")), function(data) {
+            result = prep_product_autocomplete_data(data)
+            response(result);
         });
       },
       minLength: 4,
@@ -173,10 +173,6 @@ $.fn.objectPicker = function(url){
 
 $.fn.productPicker = function(){
   $(this).objectPicker(Spree.routes.product_search_basic);
-}
-
-$.fn.userPicker = function(){
-  $(this).objectPicker(Spree.routes.user_search);
 }
 
 $(".observe_field").on('change', function() {

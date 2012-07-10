@@ -46,12 +46,10 @@ $(document).ready(function(){
       minChars: 5,
       delay: 1500,
       source: function(request, response) {
-        var params = { q: $('#customer_search').val(),
-                       authenticity_token: encodeURIComponent($('meta[name=csrf-token]').attr("content")) }
-        $.get(Spree.routes.user_search + '&' + jQuery.param(params), function(data) {
-          result = prep_user_autocomplete_data(data)
-          response(result);
-        });
+          $.get(Spree.routes.admin_users_path({format: 'json'}) + "?q=" + $("#customer_search").val() + "&authenticity_token=" + encodeURIComponent($('meta[name=csrf-token]').attr("content")), function(data) {
+           result = prep_user_autocomplete_data(data);
+           response(result);
+         });
       },
       focus: function(event, ui) {
         $('#customer_search').val(ui.item.label);

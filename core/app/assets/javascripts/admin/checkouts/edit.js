@@ -46,10 +46,10 @@ $(document).ready(function(){
       minChars: 5,
       delay: 1500,
       source: function(request, response) {
-          $.get(Spree.routes.admin_users_path({format: 'json'}) + "?q=" + $("#customer_search").val() + "&authenticity_token=" + encodeURIComponent($('meta[name=csrf-token]').attr("content")), function(data) {
-           result = prep_user_autocomplete_data(data);
-           response(result);
-         });
+        $.get(ajax_urls.user_search_basic_json + "&q=" + $("#customer_search").val() + "&authenticity_token=" + encodeURIComponent($('meta[name=csrf-token]').attr("content")), function(data) {
+          result = prep_user_autocomplete_data(data)
+          response(result);
+        });
       },
       focus: function(event, ui) {
         $('#customer_search').val(ui.item.label);
@@ -78,7 +78,6 @@ $(document).ready(function(){
         $('#user_id').val(ui.item.data['id']);
         $('#guest_checkout_true').prop("checked", false);
         $('#guest_checkout_false').prop("checked", true);
-        $('#guest_checkout_false').prob("disabled", false);
         return true;
       }
     }).data("autocomplete")._renderItem = function(ul, item) {
@@ -108,6 +107,7 @@ $(document).ready(function(){
     $('#customer_search').val("");
     $('#user_id').val("");
     $('#checkout_email').val("");
+    $('#guest_checkout_false').prop("disabled", true);
 
     $('#order_bill_address_attributes_firstname').val("");
     $('#order_bill_address_attributes_lastname').val("");
@@ -145,5 +145,3 @@ $(document).ready(function(){
   }
 
 });
-
-

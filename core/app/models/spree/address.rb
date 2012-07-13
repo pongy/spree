@@ -8,7 +8,7 @@ module Spree
     #validates :firstname, :lastname, :address1, :city, :zipcode, :country, :phone, :presence => true
     validates :firstname, :lastname, :address1, :city, :country, :phone, :presence => true
     validate :state_validate
-    validates :zipcode, :presence => true, :unless => Spree::Config[:address_requires_zipcode]
+    validates :zipcode, :presence => true, :if => Spree::Config[:address_requires_zipcode]
     
     attr_accessible :firstname, :lastname, :address1, :address2,
                     :city, :zipcode, :country_id, :state_id,

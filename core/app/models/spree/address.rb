@@ -5,9 +5,11 @@ module Spree
 
     has_many :shipments, :class_name => "Spree::Shipment"
 
-    validates :firstname, :lastname, :address1, :city, :zipcode, :country, :phone, :presence => true
+    #validates :firstname, :lastname, :address1, :city, :zipcode, :country, :phone, :presence => true
+    validates :firstname, :lastname, :address1, :city, :country, :phone, :presence => true
     validate :state_validate
-
+    validates :zipcode, :presence => true, :if => Proc.new {|address| address.zipcode.blank? && Spree::Config[:address_requires_zipcode] }
+    
     attr_accessible :firstname, :lastname, :address1, :address2,
                     :city, :zipcode, :country_id, :state_id,
                     :country, :state, :phone, :state_name,

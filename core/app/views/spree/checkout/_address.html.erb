@@ -43,8 +43,9 @@
           <% have_states = !@order.bill_address.country.states.empty? %>
           <%= bill_form.label :state, t(:state) %>
            <% if Spree::Config[:address_requires_state] %>
-            <span class="required">*</span><br />
+            <span class="required">*</span>
            <% end %>
+           <br />
           <noscript>
             <%= bill_form.text_field :state_name, :class => 'required' %>
           </noscript>

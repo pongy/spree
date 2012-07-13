@@ -56,7 +56,7 @@
                                 {:class => have_states ? 'required' : 'hidden',
                                 :disabled => !have_states}) +
              bill_form.text_field(:state_name,
-                                :class => !have_states ? 'required' : 'hidden',
+                                :class => !have_states ? '' : 'hidden',
                                 :disabled => have_states)
              ].join.gsub('"', "'").gsub("\n", "")
           %>
@@ -151,7 +151,7 @@
                                 {:class => have_states ? 'required' : 'hidden',
                                 :disabled => !have_states}) +
              ship_form.text_field(:state_name,
-                                :class => !have_states ? 'required' : 'hidden',
+                                :class => !have_states ? '' : 'hidden',
                                 :disabled => have_states)
              ].join.gsub('"', "'").gsub("\n", "")
           %>

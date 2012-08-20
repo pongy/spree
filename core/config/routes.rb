@@ -40,13 +40,8 @@ Spree::Core::Engine.routes.draw do
     end
   end
 
-  #   # route globbing for pretty nested taxon and product paths
+  # route globbing for pretty nested taxon and product paths
   match '/t/*id', :to => 'taxons#show', :as => :nested_taxons
-  #
-  #   #moved old taxons route to after nested_taxons so nested_taxons will be default route
-  #   #this route maybe removed in the near future (no longer used by core)
-  #   map.resources :taxons
-  #
 
   namespace :admin do
     resources :adjustments
@@ -195,6 +190,6 @@ Spree::Core::Engine.routes.draw do
 
   match '/admin', :to => 'admin/orders#index', :as => :admin
 
-  match '/content/cvv', :to => 'content#cvv'
+  match '/content/cvv', :to => 'content#cvv', :as => :cvv
   match '/content/*path', :to => 'content#show', :via => :get, :as => :content
 end

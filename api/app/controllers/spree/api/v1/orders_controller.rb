@@ -8,7 +8,7 @@ module Spree
         def index
           # should probably look at turning this into a CanCan step
           raise CanCan::AccessDenied unless current_api_user.has_role?("admin")
-          @orders = Order.page(params[:page])
+          @orders = Order.page(params[:page]).per(params[:per_page])
         end
 
         def show
@@ -27,6 +27,7 @@ module Spree
         def update
           authorize! :update, Order
           if order.update_attributes(@nested_params)
+            order.update!
             render :show
           else
             invalid_resource!(order)

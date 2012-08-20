@@ -29,7 +29,22 @@ module Spree
 
     has_one :master,
       :class_name => 'Spree::Variant',
-      :conditions => ["#{Variant.quoted_table_name}.is_master = ?", true]
+      :conditions => { :is_master => true }
+
+    has_many :variants,
+      :class_name => 'Spree::Variant',
+      :conditions => { :is_master => false, :deleted_at => nil },
+      :order => :position
+
+    has_many :variants_including_master,
+      :class_name => 'Spree::Variant',
+      :conditions => { :deleted_at => nil },
+      :dependent => :destroy
+
+    has_many :variants_with_only_master,
+      :class_name => 'Spree::Variant',
+      :conditions => { :is_master => true, :deleted_at => nil },
+      :dependent => :destroy
 
     delegate_belongs_to :master, :sku, :price, :weight, :height, :width, :depth, :is_master
     delegate_belongs_to :master, :cost_price if Variant.table_exists? && Variant.column_names.include?('cost_price')
@@ -41,31 +56,11 @@ module Spree
     after_save :save_master
     after_save :set_master_on_hand_to_zero_when_product_has_variants
 
-    has_many :variants,
-      :class_name => 'Spree::Variant',
-      :conditions => ["#{::Spree::Variant.quoted_table_name}.is_master = ? AND #{::Spree::Variant.quoted_table_name}.deleted_at IS NULL", false],
-      :order => "#{::Spree::Variant.quoted_table_name}.position ASC"
-
-    has_many :variants_including_master,
-      :class_name => 'Spree::Variant',
-      :conditions => ["#{::Spree::Variant.quoted_table_name}.deleted_at IS NULL"],
-      :dependent => :destroy
-
-    has_many :variants_with_only_master,
-      :class_name => 'Spree::Variant',
-      :conditions => ["#{::Spree::Variant.quoted_table_name}.deleted_at IS NULL AND #{::Spree::Variant.quoted_table_name}.is_master = ?", true],
-      :dependent => :destroy
+    has_many :master_images, :source => :images, :through => :master, :order => :position
+    has_many :variant_images, :source => :images, :through => :variants_including_master, :order => :position
+    alias_method :images, :master_images
 
     accepts_nested_attributes_for :variants, :allow_destroy => true
-
-    def variant_images
-      Image.joins("LEFT JOIN #{Variant.quoted_table_name} ON #{Variant.quoted_table_name}.id = #{Asset.quoted_table_name}.viewable_id").
-      where("#{Variant.quoted_table_name}.product_id = #{self.id}").
-      order("#{Asset.quoted_table_name}.position").
-      extend(Spree::Core::RelationSerialization)
-    end
-
-    alias_method :images, :variant_images
 
     validates :name, :price, :permalink, :presence => true
 
@@ -87,11 +82,6 @@ module Spree
     alias :options :product_option_types
 
     after_initialize :ensure_master
-
-    def ensure_master
-      return unless new_record?
-      self.master ||= Variant.new
-    end
 
     def to_param
       permalink.present? ? permalink : (permalink_was || name.to_s.to_url)
@@ -254,6 +244,11 @@ module Spree
       # when saving so we force a save using a hook.
       def save_master
         master.save if master && (master.changed? || master.new_record?)
+      end
+
+      def ensure_master
+        return unless new_record?
+        self.master ||= Variant.new
       end
   end
 end

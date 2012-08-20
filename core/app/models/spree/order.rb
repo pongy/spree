@@ -19,7 +19,7 @@ module Spree
     belongs_to :shipping_method, :class_name => "Spree::ShippingMethod"
 
     has_many :state_changes, :as => :stateful
-    has_many :line_items, :dependent => :destroy
+    has_many :line_items, :dependent => :destroy, :order => "created_at ASC"
     has_many :inventory_units
     has_many :payments, :dependent => :destroy
     has_many :shipments, :dependent => :destroy
@@ -125,6 +125,14 @@ module Spree
     # Use this method in other gems that wish to register their own custom logic that should be called after Order#updat
     def self.register_update_hook(hook)
       self.update_hooks.add(hook)
+    end
+
+    def checkout_steps
+      if payment and payment.payment_method.payment_profiles_supported?
+        %w(address delivery payment confirm complete)
+      else
+        %w(address delivery payment complete)
+      end
     end
 
     # For compatiblity with Calculator::PriceSack
@@ -383,10 +391,10 @@ module Spree
     # Finalizes an in progress order after checkout is complete.
     # Called after transition to complete state when payments will have been processed
     def finalize!
-      update_attribute(:completed_at, Time.now)
+      touch :completed_at
       InventoryUnit.assign_opening_inventory(self)
       # lock any optional adjustments (coupon promotions, etc.)
-      adjustments.optional.each { |adjustment| adjustment.update_attribute('locked', true) }
+      adjustments.optional.each { |adjustment| adjustment.update_column('locked', true) }
       deliver_order_confirmation_email
 
       self.state_changes.create({

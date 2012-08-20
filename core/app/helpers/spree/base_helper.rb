@@ -65,12 +65,21 @@ module Spree
 
     def meta_data_tags
       object = instance_variable_get('@'+controller_name.singularize)
-      meta = { :keywords => Spree::Config[:default_meta_keywords], :description => Spree::Config[:default_meta_description] }
+      meta = {}
 
-      if object.kind_of?(ActiveRecord::Base)
+      if object.kind_of? ActiveRecord::Base
         meta[:keywords] = object.meta_keywords if object[:meta_keywords].present?
         meta[:description] = object.meta_description if object[:meta_description].present?
       end
+
+      if meta[:description].blank? && object.kind_of?(Spree::Product)
+        meta[:description] = strip_tags(object.description)
+      end
+
+      meta.reverse_merge!({
+        :keywords => Spree::Config[:default_meta_keywords],
+        :description => Spree::Config[:default_meta_description]
+      })
 
       meta.map do |name, content|
         tag('meta', :name => name, :content => content)
@@ -86,9 +95,15 @@ module Spree
       link_to image_tag(image_path), root_path
     end
 
-    def flash_messages
+    def flash_messages(opts = {})
+      opts[:ignore_types] = [:commerce_tracking].concat(opts[:ignore_types] || [])
+
+      flash.reject do |msg_type, text|
+        opts[:ignore_types].include?(msg_type)
+      end
+
       flash.each do |msg_type, text|
-        concat(content_tag :div, text, :class => "flash #{msg_type}") unless msg_type == :commerce_tracking
+        concat(content_tag :div, text, :class => "flash #{msg_type}")
       end
       nil
     end

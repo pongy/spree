@@ -86,7 +86,7 @@ module Spree
     def update!(order)
       old_state = state
       new_state = determine_state(order)
-      update_attribute_without_callbacks 'state', determine_state(order)
+      update_column 'state', new_state
       after_ship if new_state == 'shipped' and old_state != 'shipped'
     end
 
@@ -104,12 +104,6 @@ module Spree
       def description_for_shipping_charge
         "#{I18n.t(:shipping)} (#{shipping_method.name})"
       end
-
-      # def transition_order
-      #   update_attribute(:shipped_at, Time.now)
-      #   # transition order to shipped if all shipments have been shipped
-      #   order.ship! if order.shipments.all?(&:shipped?)
-      # end
 
       def validate_shipping_method
         unless shipping_method.nil?
@@ -138,6 +132,11 @@ module Spree
 
       def after_ship
         inventory_units.each &:ship!
+        send_shipped_email
+        touch :shipped_at
+      end
+
+      def send_shipped_email
         ShipmentMailer.shipped_email(self).deliver
       end
 
